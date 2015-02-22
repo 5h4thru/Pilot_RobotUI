@@ -1,0 +1,4 @@
+21/02/2015 06:16:01.834 - [edu.utdallas.sai.util.MyLogger.writeToLog] - [INFO] - Class Name: edu.utdallas.sai.MainApp
+21/02/2015 06:16:01.834 - [edu.utdallas.sai.util.MyLogger.writeToLog] - [INFO] - Exception: 
+/C:/eclipse/workspace/SampleFX/bin/edu/utdallas/sai/view/RobotOverview.fxml
+
