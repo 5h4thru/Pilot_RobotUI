@@ -31,7 +31,7 @@ public class MiniRobot extends Sprite {
 	/**
 	 * Number of frames and directions the robot is pointing nose
 	 */
-	private final static int NUM_DIRECTIONS = 32;
+	private final static int NUM_DIRECTIONS = 60;
 
 	/**
 	 * The angle of one direction (adjacent directions) (11.25 degrees)
@@ -58,7 +58,9 @@ public class MiniRobot extends Sprite {
 	/**
 	 * Velocity amount used vector when robot moves forward. scale vector of robot. See flipBook translateX and Y.
 	 */
-	private  static float THRUST_AMOUNT = 4.3f;
+	private  static float THRUST_AMOUNT_SLOW = 0.5f;
+	private  static float THRUST_AMOUNT_MEDIUM = 2.5f;
+	private  static float THRUST_AMOUNT_FAST = 4.0f;
 
 	/**
 	 * Current turning direction. default is NEITHER. Clockwise and Counter Clockwise.
@@ -141,12 +143,12 @@ public class MiniRobot extends Sprite {
 		// set javafx node to an image
 		firstrobot.setVisible(true);
 		node = flipBook;
-		flipBook.setTranslateX(200);
+		flipBook.setTranslateX(300);
 		flipBook.setTranslateY(300);
 		flipBook.setCache(true);
 		flipBook.setCacheHint(CacheHint.SPEED);
-		flipBook.setManaged(false);
-		flipBook.setAutoSizeChildren(false);
+		flipBook.setManaged(true);
+		flipBook.setAutoSizeChildren(true);
 		initHitZone();
 
 	}
@@ -223,7 +225,7 @@ public class MiniRobot extends Sprite {
 	 * @param screenY The mouse press' screen ycoordinate.
 	 * @param thrust  Thrust robot forward or not. True move forward otherwise false.
 	 */
-	public void plotCourse(double screenX, double screenY, boolean thrust) {
+	public void plotCourse(double screenX, double screenY, boolean thrust, String speed, boolean fromKeyBoard) {
 		// get center of robot
 		double sx = getCenterX();
 		double sy = getCenterY();
@@ -257,6 +259,7 @@ public class MiniRobot extends Sprite {
 				goOtherWay = true;
 			} else {
 				turnDirection = MiniRobot.DIRECTION.NEITHER;
+				goOtherWay = true; ///
 			}
 		} else {
 			if (angleBetweenUAndV < 0) {
@@ -265,6 +268,7 @@ public class MiniRobot extends Sprite {
 				turnDirection = MiniRobot.DIRECTION.COUNTER_CLOCKWISE;
 			} else {
 				turnDirection = MiniRobot.DIRECTION.NEITHER;
+				goOtherWay = true; ////
 			}
 		}
 
@@ -295,10 +299,23 @@ public class MiniRobot extends Sprite {
 		System.out.println(debugMsg);
 		 */
 		if(thrust) {
-			vX = Math.cos(atan2RadiansV) * THRUST_AMOUNT;
-			vY = -Math.sin(atan2RadiansV) * THRUST_AMOUNT;
+
+			if(speed.equalsIgnoreCase("slow")) {
+				vX = Math.cos(atan2RadiansV) * THRUST_AMOUNT_SLOW;
+				vY = -Math.sin(atan2RadiansV) * THRUST_AMOUNT_SLOW;	
+			}
+			else if(speed.equalsIgnoreCase("medium")) {
+				vX = Math.cos(atan2RadiansV) * THRUST_AMOUNT_MEDIUM;
+				vY = -Math.sin(atan2RadiansV) * THRUST_AMOUNT_MEDIUM;	
+			}
+			else if(speed.equalsIgnoreCase("fast")) {
+				vX = Math.cos(atan2RadiansV) * THRUST_AMOUNT_FAST;
+				vY = -Math.sin(atan2RadiansV) * THRUST_AMOUNT_FAST;	
+			}
+
 		}
-		turnrobot();
+		if(!fromKeyBoard)
+			turnrobot();
 		update();
 
 		u = v;

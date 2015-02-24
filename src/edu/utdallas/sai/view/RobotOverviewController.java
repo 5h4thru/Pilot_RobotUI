@@ -5,10 +5,10 @@ import java.util.Random;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -16,9 +16,16 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.Slider;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
@@ -53,11 +60,29 @@ public class RobotOverviewController extends GameWorld{
 	@FXML
 	Button clearButton;
 	@FXML
+	RadioButton slowRB;
+	@FXML
+	RadioButton mediumRB;
+	@FXML
+	RadioButton fastRB;
+	@FXML
 	Label temperatureStatus;
 	@FXML
 	Label batteryLabel;
 	@FXML
 	Label cameraLabel;
+	@FXML
+	Label wifiLabel;
+	@FXML
+	Label overallStatusLabel;
+	@FXML
+	Label sliderLabel;
+	@FXML
+	Label armImageLabel;
+	@FXML
+	ToggleButton armToggle;
+	@FXML
+	Slider sliderArm;
 	@FXML
 	AnchorPane anchorPaneForRobot;
 	@FXML
@@ -69,13 +94,25 @@ public class RobotOverviewController extends GameWorld{
 	private MainApp mainApp;
 	private Scene scene;
 	private Stage primaryStage;
+	private ToggleGroup group = new ToggleGroup();
+	private ToggleGroup groupArm = new ToggleGroup();
+	private String speed = "slow"; //set default speed as slow
+
+	public String getSpeed() {
+		return speed;
+	}
+	public void setSpeed(String speed) {
+		this.speed = speed;
+	}
+
 
 	//Simple variable for generating a random number from 50-70
 	Random numbers = new Random();
 	float minX = 50.0f;
 	float maxX = 70.0f;
 	//Set zoom for the image
-	DoubleProperty zoomProperty = new SimpleDoubleProperty(50);
+	DoubleProperty zoomProperty = new SimpleDoubleProperty(1.1);
+	Double SCALE_DELTA = 1.1;
 
 	//Setting images for buttons
 	private ImageView upImage = new ImageView(
@@ -113,6 +150,16 @@ public class RobotOverviewController extends GameWorld{
 			new Image("file:resources/images/wifi/wifi_on.png"));
 	private ImageView cameraImg = new ImageView(
 			new Image("file:resources/images/camera/camera.png"));
+	private ImageView slowImg = new ImageView(
+			new Image("file:resources/images/speed/crawl.png"));
+	private ImageView mediumImg = new ImageView(
+			new Image("file:resources/images/speed/walk.png"));
+	private ImageView fastImg = new ImageView(
+			new Image("file:resources/images/speed/run.png"));
+	private ImageView armImgOpen = new ImageView(
+			new Image("file:resources/images/arm/arm_open.png"));
+	private ImageView armImgClose = new ImageView(
+			new Image("file:resources/images/arm/arm_close.png"));
 	//Ends here - images for buttons
 
 	public RobotOverviewController() {
@@ -141,6 +188,10 @@ public class RobotOverviewController extends GameWorld{
 		this.scene = scene;
 	}
 
+	public void setStage(Stage prim) {
+		this.primaryStage = prim;
+	}
+
 	/**
 	 * Will be bound to FXML for manipulating the FXML file
 	 */
@@ -155,6 +206,11 @@ public class RobotOverviewController extends GameWorld{
 		batteryLabel.setGraphic(batteryImage0);
 		wifiButton.setGraphic(wifiOn);
 		cameraButton.setGraphic(cameraImg);
+		slowRB.setGraphic(slowImg);
+		mediumRB.setGraphic(mediumImg);
+		fastRB.setGraphic(fastImg);
+		armImageLabel.setGraphic(armImgOpen);
+		anchorPaneForRobot.setStyle("-fx-background-image: url('file:resources/images/stars/stars.jpg')");
 
 		//Add images of battery in array
 		//Battery icon will change every 2 second causing impression that the robot is charging
@@ -181,16 +237,22 @@ public class RobotOverviewController extends GameWorld{
 	 */
 	void firstMethod() {
 
-		cameraLabel.setText("Press button!!!");
+		cameraButton.setFocusTraversable(false);
+		cameraLabel.setText("Press camera button for Robot's POV");
 		clearButton.setVisible(false);
 		cameraButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				anchorPaneForFPSPic.getChildren().add(fpsPicture);
+				anchorPaneForFPSPic.getChildren().add(fpsPicture); 
 				fpsPicture.setId("myPic"); //Set the ID for this pic which will be used later
+				fpsPicture.fitWidthProperty().bind(anchorPaneForFPSPic.widthProperty()); //centres the image
+				fpsPicture.fitHeightProperty().bind(anchorPaneForFPSPic.heightProperty()); //centers the image
+				anchorPaneForFPSPic.getChildren().remove(clearButton);
+				anchorPaneForFPSPic.setStyle("-fx-background-color: #D4DCFF;");
 				if(cameraButton.isVisible()) {
 					cameraButton.setVisible(false);
 					cameraLabel.setText("");
+					anchorPaneForFPSPic.getChildren().add(clearButton);
 					clearButton.setVisible(true);
 				}
 			}
@@ -200,30 +262,35 @@ public class RobotOverviewController extends GameWorld{
 			@Override
 			public void handle(ActionEvent event) {
 				anchorPaneForFPSPic.getChildren().remove(fpsPicture);
+				anchorPaneForFPSPic.setStyle("-fx-background-image: url('file:resources/images/camera/cam_bck.png'); -fx-background-size: contain;  -fx-background-repeat: no-repeat;");
 				if(!cameraButton.isVisible()) {
 					cameraButton.setVisible(true);
-					cameraLabel.setText("Press button!!!");
+					cameraLabel.setText("Press camera button for Robot's POV");
 					clearButton.setVisible(false);
 				}
 			}
 		});
 
+		temperatureButton.setFocusTraversable(false);
 		temperatureButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override public void handle(ActionEvent event) {
 				String value = String.valueOf(numbers.nextFloat() * (maxX - minX) + minX);
-				temperatureStatus.setText(String.format("%.2f", Float.parseFloat(value))+"\u00b0 F");
+				temperatureStatus.setText("Temperature: "+String.format("%.2f", Float.parseFloat(value))+" \u00b0F");
 			}
 		});
 
+		wifiButton.setFocusTraversable(false);
 		wifiButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				if(wifiButton.getGraphic() == wifiOn) {
+					wifiLabel.setText("WiFi - OFF");
 					wifiButton.setGraphic(wifiOff);
 				}
-				else {wifiButton.setGraphic(wifiOn);}
+				else {wifiLabel.setText("WiFi - ON"); wifiButton.setGraphic(wifiOn);}
 			}
 		});
+
 	}
 
 
@@ -237,12 +304,38 @@ public class RobotOverviewController extends GameWorld{
 		anchorPaneForRobot = (AnchorPane) (((BorderPane)primaryStage.getScene().getRoot()).lookup("#anchorPaneForRobot"));
 		anchorPaneForFPSPic =  (AnchorPane) (((BorderPane)primaryStage.getScene().getRoot()).lookup("#anchorPaneForFPSPic"));
 		setGameSurface(anchorPaneForRobot); //Sets the game surface for the Robot to move
-		((BorderPane)primaryStage.getScene().getRoot()).getChildren().get(0).setStyle("-fx-background-color: red;");
-		((BorderPane)primaryStage.getScene().getRoot()).getChildren().get(1).setStyle("-fx-background-color: blue;");
+		((BorderPane)primaryStage.getScene().getRoot()).getChildren().get(0).setStyle("-fx-background-color: #D4DCFF;");
+		((BorderPane)primaryStage.getScene().getRoot()).getChildren().get(1).setStyle("-fx-background-color: #D4DCFF;");
+		anchorPaneForFPSPic.setStyle("-fx-background-image: url('file:resources/images/camera/cam_bck.png'); -fx-background-size: contain;  -fx-background-repeat: no-repeat;");
 		getSpriteManager().addSprites(miniRobot); //Add the robot to our Sprite for animations
 		miniRobot.node.setTranslateX(10.0);
 		miniRobot.node.setTranslateY(10.0);
 		anchorPaneForRobot.getChildren().add(miniRobot.node);
+
+		//Set the arrow keys
+		up = (Button) ((BorderPane)primaryStage.getScene().getRoot()).lookup("#up");
+		down = (Button) ((BorderPane)primaryStage.getScene().getRoot()).lookup("#down");
+		left = (Button) ((BorderPane)primaryStage.getScene().getRoot()).lookup("#left");
+		right = (Button) ((BorderPane)primaryStage.getScene().getRoot()).lookup("#right");
+		up.setFocusTraversable(false); down.setFocusTraversable(false); left.setFocusTraversable(false); right.setFocusTraversable(false);
+
+		//Set the button values
+		slowRB = (RadioButton) ((BorderPane)primaryStage.getScene().getRoot()).lookup("#slowRB");
+		mediumRB = (RadioButton) ((BorderPane)primaryStage.getScene().getRoot()).lookup("#mediumRB");
+		fastRB = (RadioButton) ((BorderPane)primaryStage.getScene().getRoot()).lookup("#fastRB");
+
+		//Labels
+		wifiLabel = (Label) ((BorderPane)primaryStage.getScene().getRoot()).lookup("#wifiLabel");
+		overallStatusLabel = (Label) ((BorderPane)primaryStage.getScene().getRoot()).lookup("#overallStatusLabel");
+		sliderArm = (Slider) ((BorderPane)primaryStage.getScene().getRoot()).lookup("#sliderArm");
+		sliderLabel = (Label) ((BorderPane)primaryStage.getScene().getRoot()).lookup("#sliderLabel");
+		armToggle = (ToggleButton) ((BorderPane)primaryStage.getScene().getRoot()).lookup("#armToggle");
+		armImageLabel = (Label) ((BorderPane)primaryStage.getScene().getRoot()).lookup("#armImageLabel");
+		sliderArm.setMax(90.0); sliderArm.setFocusTraversable(false);
+		sliderLabel.setText("Arm is at 0\u00b0");
+		armToggle.setToggleGroup(groupArm); armToggle.setFocusTraversable(false);
+
+		//Ensure this method is called last
 		setupInput(primaryStage); //setUpInput method is responsible for causing any game animations
 	}
 
@@ -290,61 +383,244 @@ public class RobotOverviewController extends GameWorld{
 	 */
 	private void setupInput(Stage primaryStage) {
 
-		EventHandler<MouseEvent> fireOrMove = new EventHandler<MouseEvent>() {
+		//Toggle arm close-open
+		groupArm.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Toggle> observable,
+					Toggle oldValue, Toggle newValue) {
+				if(newValue==null) {
+					armImageLabel.setGraphic(armImgOpen);
+					armToggle.setText("Arm is OPENED");
+				}
+				else {
+					armImageLabel.setGraphic(armImgClose);
+					armToggle.setText("Arm is CLOSED");
+				}
+
+			}
+		});
+		//////////////////////////////////
+		//Slider logic
+		sliderArm.valueProperty().addListener(new ChangeListener<Number>() {
+			public void changed(ObservableValue<? extends Number> ov,
+					Number old_val, Number new_val) {
+				sliderLabel.setText("Arm is at "+String.format("%.0f", new_val)+"\u00b0");
+				anchorPaneForRobot.requestFocus();
+			}
+		});
+		//////////////////////////////////
+
+		//Keyboard buttons logic
+		primaryStage.getScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent event) {
+				//				System.out.println("CENTRE X: "+miniRobot.getCenterX()+"\tCENTRE Y: "+miniRobot.getCenterY());
+				if(event.getCode()==KeyCode.UP){
+					miniRobot.applyTheBrakes(miniRobot.getCenterX(), miniRobot.getCenterY());
+					if (speed.equalsIgnoreCase("slow")) {
+						overallStatusLabel.setText("The robot is trudging at 10 mph");
+						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()-10.0, true, "slow", true);
+					}
+					else if (speed.equalsIgnoreCase("medium")) {
+						overallStatusLabel.setText("The robot is walking at 25 mph");
+						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()-20.0, true, "medium", true);
+					}
+					else if (speed.equalsIgnoreCase("fast")) {
+						overallStatusLabel.setText("The robot is cruising at 50 mph");
+						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()-40.0, true, "fast", true);
+					}
+				}
+
+				else if(event.getCode()==KeyCode.DOWN){
+					miniRobot.applyTheBrakes(miniRobot.getCenterX(), miniRobot.getCenterY());
+					if (speed.equalsIgnoreCase("slow")) {
+						overallStatusLabel.setText("The robot is trudging at 10 mph");
+						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()+10.0, true, "slow", true);
+					}
+					else if (speed.equalsIgnoreCase("medium")) {
+						overallStatusLabel.setText("The robot is walking at 25 mph");	
+						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()+20.0, true, "medium", true);
+					}
+					else if (speed.equalsIgnoreCase("fast")) {
+						overallStatusLabel.setText("The robot is cruising at 50 mph");
+						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()+40.0, true, "fast", true);
+					}
+				}
+
+
+				else if(event.getCode()==KeyCode.RIGHT){
+					miniRobot.applyTheBrakes(miniRobot.getCenterX(), miniRobot.getCenterY());
+					if (speed.equalsIgnoreCase("slow")) {
+						overallStatusLabel.setText("The robot is trudging at 10 mph");
+						miniRobot.plotCourse(miniRobot.getCenterX()+10.0, miniRobot.getCenterY(), true, "slow", true);
+					}
+					else if (speed.equalsIgnoreCase("medium")) {
+						overallStatusLabel.setText("The robot is walking at 25 mph");
+						miniRobot.plotCourse(miniRobot.getCenterX()+20.0, miniRobot.getCenterY(), true, "medium", true);
+					}
+					else if (speed.equalsIgnoreCase("fast")) {
+						overallStatusLabel.setText("The robot is cruising at 50 mph");
+						miniRobot.plotCourse(miniRobot.getCenterX()+30.0, miniRobot.getCenterY(), true, "fast", true);
+					}
+				}
+
+				else if(event.getCode()==KeyCode.LEFT){
+					miniRobot.applyTheBrakes(miniRobot.getCenterX(), miniRobot.getCenterY());
+					if (speed.equalsIgnoreCase("slow")) {
+						overallStatusLabel.setText("The robot is trudging at 10 mph");
+						miniRobot.plotCourse(miniRobot.getCenterX()-10.0, miniRobot.getCenterY(), true, "slow", true);
+					}
+					else if (speed.equalsIgnoreCase("medium")) {
+						overallStatusLabel.setText("The robot is walking at 25 mph");
+						miniRobot.plotCourse(miniRobot.getCenterX()-20.0, miniRobot.getCenterY(), true, "medium", true);
+					}
+					else if (speed.equalsIgnoreCase("fast")) {
+						overallStatusLabel.setText("The robot is cruising at 50 mph");
+						miniRobot.plotCourse(miniRobot.getCenterX()-40.0, miniRobot.getCenterY(), true, "fast", true);
+					}
+				}
+			}
+		});
+		//////////////////////////////////
+
+		//Move the robot with mouse click
+		EventHandler<MouseEvent> moveWithMouse = new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
 				miniRobot.applyTheBrakes(event.getX(), event.getY());
 				// move forward and rotate robot
-				miniRobot.plotCourse(event.getX(), event.getY(), true);
+				if (speed.equalsIgnoreCase("slow")) {
+					overallStatusLabel.setText("The robot is trudging at 10 mph");
+					miniRobot.plotCourse(event.getX(), event.getY(), true, "slow", false);
+				}
+				else if (speed.equalsIgnoreCase("medium")) {
+					overallStatusLabel.setText("The robot is walking at 25 mph");
+					miniRobot.plotCourse(event.getX(), event.getY(), true, "medium", false);
+				}
+				else if (speed.equalsIgnoreCase("fast")) {
+					overallStatusLabel.setText("The robot is cruising at 50 mph");
+					miniRobot.plotCourse(event.getX(), event.getY(), true, "fast", false);
+				}
+			}
+		};
+		//////////////////////////////////
+
+		//Move with the arrow buttons in the UI
+		EventHandler<MouseEvent> move = new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				if(event.getSource().toString().contains("up")) {
+					miniRobot.applyTheBrakes(miniRobot.getCenterX(), miniRobot.getCenterY());
+
+					if (speed.equalsIgnoreCase("slow"))
+						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()-10.0, true, "slow", false);
+					else if (speed.equalsIgnoreCase("medium"))
+						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()-20.0, true, "medium", false);
+					else if (speed.equalsIgnoreCase("fast"))
+						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()-40.0, true, "fast", false);
+				}
+				if(event.getSource().toString().contains("down")) {
+					miniRobot.applyTheBrakes(miniRobot.getCenterX(), miniRobot.getCenterY());
+					if (speed.equalsIgnoreCase("slow"))
+						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()+10.0, true, "slow", false);
+					else if (speed.equalsIgnoreCase("medium"))
+						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()+20.0, true, "medium", false);
+					else if (speed.equalsIgnoreCase("fast"))
+						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()+40.0, true, "fast", false);
+				}
+				if(event.getSource().toString().contains("right")) {
+					miniRobot.applyTheBrakes(miniRobot.getCenterX(), miniRobot.getCenterY());
+					if (speed.equalsIgnoreCase("slow"))
+						miniRobot.plotCourse(miniRobot.getCenterX()+10.0, miniRobot.getCenterY(), true, "slow", false);
+					else if (speed.equalsIgnoreCase("medium"))
+						miniRobot.plotCourse(miniRobot.getCenterX()+20.0, miniRobot.getCenterY(), true, "medium", false);
+					else if (speed.equalsIgnoreCase("fast"))
+						miniRobot.plotCourse(miniRobot.getCenterX()+30.0, miniRobot.getCenterY(), true, "fast", false);
+				}
+				if(event.getSource().toString().contains("left")) {
+					miniRobot.applyTheBrakes(miniRobot.getCenterX(), miniRobot.getCenterY());
+					if (speed.equalsIgnoreCase("slow"))
+						miniRobot.plotCourse(miniRobot.getCenterX()-10.0, miniRobot.getCenterY(), true, "slow", false);
+					else if (speed.equalsIgnoreCase("medium"))
+						miniRobot.plotCourse(miniRobot.getCenterX()-20.0, miniRobot.getCenterY(), true, "medium", false);
+					else if (speed.equalsIgnoreCase("fast"))
+						miniRobot.plotCourse(miniRobot.getCenterX()-40.0, miniRobot.getCenterY(), true, "fast", false);
+				}
+			}
+		};
+		//////////////////////////////////
+
+
+		//Zooming the FPS picture
+		anchorPaneForFPSPic.setOnScroll(new EventHandler<ScrollEvent>() {
+			@Override public void handle(ScrollEvent event) {
+				event.consume();
+
+				if (event.getDeltaY() == 0) {
+					return;
+				}
+				if(event.getDeltaY() > 0)
+					zoomProperty.set(zoomProperty.get() * 1.1);
+				else zoomProperty.set(zoomProperty.get() / 1.1);
+
+				fpsPicture = (ImageView) anchorPaneForFPSPic.lookup("#myPic");
+				if(fpsPicture!=null) {
+					fpsPicture.setScaleX(zoomProperty.get());
+					fpsPicture.setScaleY(zoomProperty.get());
+				}
+			}
+		});
+		//////////////////////////////////
+
+		//Radio Buttons
+		slowRB.setToggleGroup(group); slowRB.setUserData("slow");
+		mediumRB.setToggleGroup(group); mediumRB.setUserData("medium");
+		fastRB.setToggleGroup(group); fastRB.setUserData("fast");
+		slowRB.setSelected(true); //Set default speed to be slow
+		slowRB.setFocusTraversable(false);
+		mediumRB.setFocusTraversable(false);
+		fastRB.setFocusTraversable(false);
+
+		group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+			public void changed(ObservableValue<? extends Toggle> ov,
+					Toggle old_toggle, Toggle new_toggle) {
+				if (group.getSelectedToggle() != null) {
+					setSpeed(group.getSelectedToggle().getUserData().toString());
+				}
+			}
+		});
+
+		anchorPaneForRobot.setOnMousePressed(moveWithMouse);
+
+		//up.setOnMouseDragged(move);
+		down.setOnMousePressed(move);
+		left.setOnMousePressed(move);
+		right.setOnMousePressed(move);
+
+		/////////////////////////////////////////
+		EventHandler<MouseEvent> circleOnMousePressedEventHandler = 
+				new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent t) {
+				System.out.println(t.getSource().toString());
 			}
 		};
 
-		//Used for zooming the picture that we display in FPSPane
-		anchorPaneForFPSPic.addEventFilter(ScrollEvent.ANY, new EventHandler<ScrollEvent>() {
-			@Override
-			public void handle(ScrollEvent event) {
-				if (event.getDeltaY() > 0) {	                	
-					zoomProperty.set(zoomProperty.get() * 1.1);
-				} else if (event.getDeltaY() < 0) {
-					zoomProperty.set(zoomProperty.get() / 1.1);
-				}
-				if (zoomProperty.get()>=80) {
-					zoomProperty.set(zoomProperty.get() / 1.1);
-				}        
-			}
-		});
+		EventHandler<MouseEvent> circleOnMouseDraggedEventHandler = 
+				new EventHandler<MouseEvent>() {
 
-		//Listener class for zooming
-		zoomProperty.addListener(new InvalidationListener() {
 			@Override
-			public void invalidated(Observable arg0) {
-				fpsPicture = (ImageView) anchorPaneForFPSPic.lookup("#myPic");
-				if(fpsPicture!=null) {
-					fpsPicture.setFitWidth(zoomProperty.get() * 4);
-					fpsPicture.setFitHeight(zoomProperty.get() * 3);
-				}
+			public void handle(MouseEvent t) {
+				miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()-0.000001, true, "fast", true);
+				System.out.println(t.getSource().toString()+"INSISDE DRAGS");
 			}
-		});
-		/*
-		anchorPaneForRobot.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent event) {
-				System.out.println(event.getCode());
-				switch(event.getCode()) {
-				case UP:
-					System.out.println("You pressed "+event.getSource());
-					TranslateTransition translateTransitionRight = new TranslateTransition();
-					translateTransitionRight.setToX(translateTransitionRight.getNode().getTranslateX()+30);
-					System.out.println();
-					translateTransitionRight.play();
-				default:
-					System.out.println("ERROR!!!");
-					break;
-				}
-			}
-		});
-		 */
-		anchorPaneForRobot.setOnMousePressed(fireOrMove);
+		};
+		/////////////////////////////////////////////////////
+		up.setOnMousePressed(circleOnMousePressedEventHandler);
+		up.setOnMouseDragged(circleOnMouseDraggedEventHandler);
+		
 	}
 }
 

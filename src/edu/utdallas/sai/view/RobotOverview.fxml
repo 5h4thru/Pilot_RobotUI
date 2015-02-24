@@ -6,24 +6,41 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.utdallas.sai.view.RobotOverviewController">
+<BorderPane prefHeight="550.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.utdallas.sai.view.RobotOverviewController">
    <top>
       <AnchorPane prefHeight="20.0" prefWidth="600.0" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="batteryLabel" layoutX="558.0" text="Label" />
-            <Button fx:id="wifiButton" layoutX="11.0" layoutY="-5.0" mnemonicParsing="false" />
+            <Label fx:id="batteryLabel" layoutX="565.0" text="Battery" AnchorPane.rightAnchor="10.0" />
+            <Button fx:id="wifiButton" layoutX="11.0" layoutY="-5.0" mnemonicParsing="false" AnchorPane.leftAnchor="10.0" />
+            <Label fx:id="wifiLabel" layoutX="78.0" layoutY="3.0" text="WiFi - ON" AnchorPane.leftAnchor="50.0" />
          </children>
       </AnchorPane>
    </top>
    <bottom>
       <AnchorPane prefHeight="100.0" prefWidth="600.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="down" layoutX="339.0" layoutY="41.0" mnemonicParsing="false" />
-            <Button fx:id="left" layoutX="260.0" layoutY="37.0" mnemonicParsing="false" />
-            <Button fx:id="right" layoutX="418.0" layoutY="41.0" mnemonicParsing="false" />
-            <Button fx:id="up" layoutX="339.0" layoutY="5.0" mnemonicParsing="false" />
-            <Button fx:id="temperatureButton" layoutX="98.0" layoutY="21.0" mnemonicParsing="false" />
-            <Label fx:id="temperatureStatus" layoutX="113.0" layoutY="56.0" text="Label" />
+            <Group layoutX="88.0" layoutY="22.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="350.0">
+               <children>
+                  <Button fx:id="right" layoutX="417.0" layoutY="41.0" mnemonicParsing="false" AnchorPane.bottomAnchor="-4.0" AnchorPane.rightAnchor="-268.0" />
+                  <Button fx:id="left" layoutX="266.0" layoutY="42.0" mnemonicParsing="false" AnchorPane.bottomAnchor="-4.0" AnchorPane.rightAnchor="-115.0" />
+                  <Button fx:id="down" layoutX="339.0" layoutY="41.0" mnemonicParsing="false" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="250.0" />
+                  <Button fx:id="up" layoutX="339.0" layoutY="5.0" mnemonicParsing="false" AnchorPane.bottomAnchor="45.0" AnchorPane.rightAnchor="250.0" />
+               </children>
+            </Group>
+            <Button fx:id="temperatureButton" layoutX="98.0" layoutY="21.0" mnemonicParsing="false" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="20.0" />
+            <Label fx:id="temperatureStatus" layoutX="113.0" layoutY="56.0" text="Temperature: " AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="20.0" />
+            <VBox layoutX="199.0" layoutY="32.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="200.0">
+               <children>
+                  <RadioButton fx:id="slowRB" layoutX="124.0" layoutY="14.0" mnemonicParsing="false" text="Slow" />
+                  <RadioButton fx:id="mediumRB" layoutX="124.0" layoutY="31.0" mnemonicParsing="false" text="Medium" />
+                  <RadioButton fx:id="fastRB" layoutX="124.0" layoutY="56.0" mnemonicParsing="false" text="Fast" />
+               </children>
+            </VBox>
+            <Label fx:id="overallStatusLabel" layoutX="249.0" layoutY="4.0" AnchorPane.leftAnchor="190.0" AnchorPane.rightAnchor="0.0" />
+            <Slider fx:id="sliderArm" layoutX="605.0" layoutY="52.0" prefHeight="18.0" prefWidth="280.0" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="20.0" />
+            <ToggleButton fx:id="armToggle" layoutX="600.0" layoutY="27.0" mnemonicParsing="false" text="Arm is OPENED" AnchorPane.bottomAnchor="40.0" AnchorPane.rightAnchor="173.0" />
+            <Label fx:id="sliderLabel" layoutX="799.0" layoutY="34.0" text="Arm is at" AnchorPane.bottomAnchor="40.0" AnchorPane.rightAnchor="28.0" />
+            <Label fx:id="armImageLabel" layoutX="557.0" layoutY="39.0" AnchorPane.rightAnchor="320.0" />
          </children>
       </AnchorPane>
    </bottom>
@@ -33,9 +50,9 @@
           <AnchorPane fx:id="anchorPaneForRobot" />
           <AnchorPane fx:id="anchorPaneForFPSPic">
                <children>
-                  <Button fx:id="cameraButton" layoutX="108.0" layoutY="121.0" mnemonicParsing="false" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="100.0" />
-                  <Button fx:id="clearButton" layoutX="163.0" layoutY="227.0" mnemonicParsing="false" text="Clear" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-                  <Label fx:id="cameraLabel" layoutX="100.0" layoutY="65.0" AnchorPane.bottomAnchor="200.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="50.0" />
+                  <Button fx:id="cameraButton" layoutX="108.0" layoutY="121.0" mnemonicParsing="false" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="50.0" />
+                  <Button fx:id="clearButton" layoutX="163.0" layoutY="227.0" mnemonicParsing="false" text="Clear" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0" />
+                  <Label fx:id="cameraLabel" layoutX="100.0" layoutY="65.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
                </children></AnchorPane>
         </items>
       </SplitPane>

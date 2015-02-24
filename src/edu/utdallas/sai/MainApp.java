@@ -24,14 +24,12 @@ public class MainApp extends Application {
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
 		showRobotOverview();
+        
 		 // setup title, scene, stats, controls, and actors.
         gameWorld.initialize(primaryStage);
 
         // kick off the game loop
-        gameWorld.beginGameLoop();
-
-        // display window
-        primaryStage.show();     
+        gameWorld.beginGameLoop();  
 	}
 
 	/**
@@ -39,14 +37,19 @@ public class MainApp extends Application {
 	 */
 	public void showRobotOverview() {
 		try {
-        	
 			// Load Robot overview.
 			FXMLLoader newLoader = new FXMLLoader();
 			newLoader.setLocation(MainApp.class.getResource("view/RobotOverview.fxml"));
-			BorderPane personOverview = (BorderPane) FXMLLoader.load(MainApp.class.getResource("view/RobotOverview.fxml"));
+			BorderPane personOverview = (BorderPane) newLoader.load();
 			Scene scene = new Scene(personOverview);
+			RobotOverviewController controller = (RobotOverviewController) newLoader.getController();
+			controller.setMainApp(this);
+			controller.setScene(scene);
+			controller.setStage(primaryStage);
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Robot UI");
+			primaryStage.setMinHeight(600.0);
+			primaryStage.setMinWidth(1000.0);
 			primaryStage.show();
 			
 		} catch (Exception e) {
