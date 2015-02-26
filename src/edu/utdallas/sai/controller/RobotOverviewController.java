@@ -1,4 +1,4 @@
-package edu.utdallas.sai.view;
+package edu.utdallas.sai.controller;
 
 import java.util.Random;
 
@@ -210,7 +210,7 @@ public class RobotOverviewController extends GameWorld{
 		mediumRB.setGraphic(mediumImg);
 		fastRB.setGraphic(fastImg);
 		armImageLabel.setGraphic(armImgOpen);
-		anchorPaneForRobot.setStyle("-fx-background-image: url('file:resources/images/stars/stars.jpg')");
+		anchorPaneForRobot.setStyle("-fx-background-image: url('file:resources/images/stars/stars.jpg'); -fx-background-size: 12in;");
 
 		//Add images of battery in array
 		//Battery icon will change every 2 second causing impression that the robot is charging
@@ -262,7 +262,8 @@ public class RobotOverviewController extends GameWorld{
 			@Override
 			public void handle(ActionEvent event) {
 				anchorPaneForFPSPic.getChildren().remove(fpsPicture);
-				anchorPaneForFPSPic.setStyle("-fx-background-image: url('file:resources/images/camera/cam_bck.png'); -fx-background-size: contain;  -fx-background-repeat: no-repeat;");
+				// TODO
+				anchorPaneForFPSPic.setStyle("-fx-background-image: url('file:resources/images/camera/cam_bck.png'); -fx-background-size: contain; -fx-background-repeat: no-repeat; -fx-background-position: center;");
 				if(!cameraButton.isVisible()) {
 					cameraButton.setVisible(true);
 					cameraLabel.setText("Press camera button for Robot's POV");
@@ -306,7 +307,7 @@ public class RobotOverviewController extends GameWorld{
 		setGameSurface(anchorPaneForRobot); //Sets the game surface for the Robot to move
 		((BorderPane)primaryStage.getScene().getRoot()).getChildren().get(0).setStyle("-fx-background-color: #D4DCFF;");
 		((BorderPane)primaryStage.getScene().getRoot()).getChildren().get(1).setStyle("-fx-background-color: #D4DCFF;");
-		anchorPaneForFPSPic.setStyle("-fx-background-image: url('file:resources/images/camera/cam_bck.png'); -fx-background-size: contain;  -fx-background-repeat: no-repeat;");
+		anchorPaneForFPSPic.setStyle("-fx-background-image: url('file:resources/images/camera/cam_bck.png'); -fx-background-size: contain;  -fx-background-repeat: no-repeat; -fx-background-position: center;");
 		getSpriteManager().addSprites(miniRobot); //Add the robot to our Sprite for animations
 		miniRobot.node.setTranslateX(10.0);
 		miniRobot.node.setTranslateY(10.0);
@@ -415,8 +416,10 @@ public class RobotOverviewController extends GameWorld{
 		primaryStage.getScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
+
 				//				System.out.println("CENTRE X: "+miniRobot.getCenterX()+"\tCENTRE Y: "+miniRobot.getCenterY());
 				if(event.getCode()==KeyCode.UP){
+					if(miniRobot.node.getTranslateY() < 0) return;
 					miniRobot.applyTheBrakes(miniRobot.getCenterX(), miniRobot.getCenterY());
 					if (speed.equalsIgnoreCase("slow")) {
 						overallStatusLabel.setText("The robot is trudging at 10 mph");
@@ -433,6 +436,7 @@ public class RobotOverviewController extends GameWorld{
 				}
 
 				else if(event.getCode()==KeyCode.DOWN){
+					if(miniRobot.node.getTranslateY() > (getGameSurface().getHeight()-50.0)) return;
 					miniRobot.applyTheBrakes(miniRobot.getCenterX(), miniRobot.getCenterY());
 					if (speed.equalsIgnoreCase("slow")) {
 						overallStatusLabel.setText("The robot is trudging at 10 mph");
@@ -450,6 +454,7 @@ public class RobotOverviewController extends GameWorld{
 
 
 				else if(event.getCode()==KeyCode.RIGHT){
+					if(miniRobot.node.getTranslateX() > (getGameSurface().getWidth()-50.0)) return;
 					miniRobot.applyTheBrakes(miniRobot.getCenterX(), miniRobot.getCenterY());
 					if (speed.equalsIgnoreCase("slow")) {
 						overallStatusLabel.setText("The robot is trudging at 10 mph");
@@ -466,6 +471,7 @@ public class RobotOverviewController extends GameWorld{
 				}
 
 				else if(event.getCode()==KeyCode.LEFT){
+					if(miniRobot.node.getTranslateX() < 0) return;
 					miniRobot.applyTheBrakes(miniRobot.getCenterX(), miniRobot.getCenterY());
 					if (speed.equalsIgnoreCase("slow")) {
 						overallStatusLabel.setText("The robot is trudging at 10 mph");
@@ -511,41 +517,68 @@ public class RobotOverviewController extends GameWorld{
 			@Override
 			public void handle(MouseEvent event) {
 				if(event.getSource().toString().contains("up")) {
+					if(miniRobot.node.getTranslateY() < 0) return;
 					miniRobot.applyTheBrakes(miniRobot.getCenterX(), miniRobot.getCenterY());
-
-					if (speed.equalsIgnoreCase("slow"))
-						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()-10.0, true, "slow", false);
-					else if (speed.equalsIgnoreCase("medium"))
-						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()-20.0, true, "medium", false);
-					else if (speed.equalsIgnoreCase("fast"))
-						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()-40.0, true, "fast", false);
+					if (speed.equalsIgnoreCase("slow")) {
+						overallStatusLabel.setText("The robot is trudging at 10 mph");
+						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()-10.0, true, "slow", true);
+					}
+					else if (speed.equalsIgnoreCase("medium")) {
+						overallStatusLabel.setText("The robot is walking at 25 mph");
+						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()-20.0, true, "medium", true);
+					}
+					else if (speed.equalsIgnoreCase("fast")) {
+						overallStatusLabel.setText("The robot is cruising at 50 mph");
+						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()-40.0, true, "fast", true);
+					}
 				}
 				if(event.getSource().toString().contains("down")) {
+					if(miniRobot.node.getTranslateY() > (getGameSurface().getHeight()-50.0)) return;
 					miniRobot.applyTheBrakes(miniRobot.getCenterX(), miniRobot.getCenterY());
-					if (speed.equalsIgnoreCase("slow"))
-						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()+10.0, true, "slow", false);
-					else if (speed.equalsIgnoreCase("medium"))
-						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()+20.0, true, "medium", false);
-					else if (speed.equalsIgnoreCase("fast"))
-						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()+40.0, true, "fast", false);
+					if (speed.equalsIgnoreCase("slow")) {
+						overallStatusLabel.setText("The robot is trudging at 10 mph");
+						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()+10.0, true, "slow", true);
+					}
+					else if (speed.equalsIgnoreCase("medium")) {
+						overallStatusLabel.setText("The robot is walking at 25 mph");
+						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()+20.0, true, "medium", true);
+					}
+					else if (speed.equalsIgnoreCase("fast")) {
+						overallStatusLabel.setText("The robot is cruising at 50 mph");
+						miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()+40.0, true, "fast", true);
+					}
 				}
 				if(event.getSource().toString().contains("right")) {
+					if(miniRobot.node.getTranslateX() > (getGameSurface().getWidth()-50.0)) return;
 					miniRobot.applyTheBrakes(miniRobot.getCenterX(), miniRobot.getCenterY());
-					if (speed.equalsIgnoreCase("slow"))
-						miniRobot.plotCourse(miniRobot.getCenterX()+10.0, miniRobot.getCenterY(), true, "slow", false);
-					else if (speed.equalsIgnoreCase("medium"))
-						miniRobot.plotCourse(miniRobot.getCenterX()+20.0, miniRobot.getCenterY(), true, "medium", false);
-					else if (speed.equalsIgnoreCase("fast"))
-						miniRobot.plotCourse(miniRobot.getCenterX()+30.0, miniRobot.getCenterY(), true, "fast", false);
+					if (speed.equalsIgnoreCase("slow")) {
+						overallStatusLabel.setText("The robot is trudging at 10 mph");
+						miniRobot.plotCourse(miniRobot.getCenterX()+(10.0), miniRobot.getCenterY(), true, "slow", true);
+					}
+					else if (speed.equalsIgnoreCase("medium")) {
+						overallStatusLabel.setText("The robot is walking at 25 mph");
+						miniRobot.plotCourse(miniRobot.getCenterX()+(10.0), miniRobot.getCenterY(), true, "medium", true);
+					}
+					else if (speed.equalsIgnoreCase("fast")) {
+						overallStatusLabel.setText("The robot is cruising at 50 mph");
+						miniRobot.plotCourse((miniRobot.getCenterX()+(10.0)), miniRobot.getCenterY(), true, "fast", true);
+					}
 				}
 				if(event.getSource().toString().contains("left")) {
+					if(miniRobot.node.getTranslateX() < 0) return;
 					miniRobot.applyTheBrakes(miniRobot.getCenterX(), miniRobot.getCenterY());
-					if (speed.equalsIgnoreCase("slow"))
-						miniRobot.plotCourse(miniRobot.getCenterX()-10.0, miniRobot.getCenterY(), true, "slow", false);
-					else if (speed.equalsIgnoreCase("medium"))
-						miniRobot.plotCourse(miniRobot.getCenterX()-20.0, miniRobot.getCenterY(), true, "medium", false);
-					else if (speed.equalsIgnoreCase("fast"))
-						miniRobot.plotCourse(miniRobot.getCenterX()-40.0, miniRobot.getCenterY(), true, "fast", false);
+					if (speed.equalsIgnoreCase("slow")) {
+						overallStatusLabel.setText("The robot is trudging at 10 mph");
+						miniRobot.plotCourse(miniRobot.getCenterX()-10.0, miniRobot.getCenterY(), true, "slow", true);
+					}
+					else if (speed.equalsIgnoreCase("medium")) {
+						overallStatusLabel.setText("The robot is walking at 25 mph");
+						miniRobot.plotCourse(miniRobot.getCenterX()-20.0, miniRobot.getCenterY(), true, "medium", true);
+					}
+					else if (speed.equalsIgnoreCase("fast")) {
+						overallStatusLabel.setText("The robot is cruising at 50 mph");
+						miniRobot.plotCourse(miniRobot.getCenterX()-40.0, miniRobot.getCenterY(), true, "fast", true);
+					}
 				}
 			}
 		};
@@ -593,11 +626,15 @@ public class RobotOverviewController extends GameWorld{
 
 		anchorPaneForRobot.setOnMousePressed(moveWithMouse);
 
-		//up.setOnMouseDragged(move);
+		up.setOnMousePressed(move);
 		down.setOnMousePressed(move);
 		left.setOnMousePressed(move);
 		right.setOnMousePressed(move);
-
+		/*
+		 * This following code tried to implement mouse drag for moving the robot but unable to implement successfully as of now
+		 * Will continue with this method after current Android project
+		 *
+ // TODO
 		/////////////////////////////////////////
 		EventHandler<MouseEvent> circleOnMousePressedEventHandler = 
 				new EventHandler<MouseEvent>() {
@@ -614,13 +651,14 @@ public class RobotOverviewController extends GameWorld{
 			@Override
 			public void handle(MouseEvent t) {
 				miniRobot.plotCourse(miniRobot.getCenterX(), miniRobot.getCenterY()-0.000001, true, "fast", true);
-				System.out.println(t.getSource().toString()+"INSISDE DRAGS");
+				//				System.out.println(t.getSource().toString()+"INSISDE DRAGS");
+				System.out.println(miniRobot.getCenterY());
 			}
 		};
 		/////////////////////////////////////////////////////
 		up.setOnMousePressed(circleOnMousePressedEventHandler);
 		up.setOnMouseDragged(circleOnMouseDraggedEventHandler);
-		
+		 */
 	}
 }
 

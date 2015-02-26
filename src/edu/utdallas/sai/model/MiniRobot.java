@@ -114,7 +114,7 @@ public class MiniRobot extends Sprite {
 
 		// Load one image.
 		Image robotImage;
-		robotImage = new Image(getClass().getClassLoader().getResource("resources/ship.png").toExternalForm(), true);
+		robotImage = new Image(getClass().getClassLoader().getResource("resources/robot.png").toExternalForm(), true);
 		stopArea.setRadius(40);
 		stopArea.setStroke(Color.ORANGE);
 		RotatedRobotImage prev = null;

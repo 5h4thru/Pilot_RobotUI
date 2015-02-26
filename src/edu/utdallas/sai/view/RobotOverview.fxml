@@ -6,12 +6,12 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="550.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.utdallas.sai.view.RobotOverviewController">
+<BorderPane prefHeight="550.0" prefWidth="900.0" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.utdallas.sai.controller.RobotOverviewController">
    <top>
       <AnchorPane prefHeight="20.0" prefWidth="600.0" BorderPane.alignment="CENTER">
          <children>
             <Label fx:id="batteryLabel" layoutX="565.0" text="Battery" AnchorPane.rightAnchor="10.0" />
-            <Button fx:id="wifiButton" layoutX="11.0" layoutY="-5.0" mnemonicParsing="false" AnchorPane.leftAnchor="10.0" />
+            <Button fx:id="wifiButton" layoutX="11.0" layoutY="-5.0" mnemonicParsing="false" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="0.0" />
             <Label fx:id="wifiLabel" layoutX="78.0" layoutY="3.0" text="WiFi - ON" AnchorPane.leftAnchor="50.0" />
          </children>
       </AnchorPane>
@@ -38,7 +38,7 @@
             </VBox>
             <Label fx:id="overallStatusLabel" layoutX="249.0" layoutY="4.0" AnchorPane.leftAnchor="190.0" AnchorPane.rightAnchor="0.0" />
             <Slider fx:id="sliderArm" layoutX="605.0" layoutY="52.0" prefHeight="18.0" prefWidth="280.0" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="20.0" />
-            <ToggleButton fx:id="armToggle" layoutX="600.0" layoutY="27.0" mnemonicParsing="false" text="Arm is OPENED" AnchorPane.bottomAnchor="40.0" AnchorPane.rightAnchor="173.0" />
+            <ToggleButton fx:id="armToggle" layoutX="600.0" layoutY="27.0" mnemonicParsing="false" styleClass="button" text="Arm is OPENED" AnchorPane.bottomAnchor="40.0" AnchorPane.rightAnchor="173.0" />
             <Label fx:id="sliderLabel" layoutX="799.0" layoutY="34.0" text="Arm is at" AnchorPane.bottomAnchor="40.0" AnchorPane.rightAnchor="28.0" />
             <Label fx:id="armImageLabel" layoutX="557.0" layoutY="39.0" AnchorPane.rightAnchor="320.0" />
          </children>
@@ -47,8 +47,8 @@
    <center>
       <SplitPane fx:id="splitPane" dividerPositions="0.6" BorderPane.alignment="CENTER">
         <items>
-          <AnchorPane fx:id="anchorPaneForRobot" />
-          <AnchorPane fx:id="anchorPaneForFPSPic">
+          <AnchorPane fx:id="anchorPaneForRobot" minWidth="600.0" />
+          <AnchorPane fx:id="anchorPaneForFPSPic" minWidth="300.0">
                <children>
                   <Button fx:id="cameraButton" layoutX="108.0" layoutY="121.0" mnemonicParsing="false" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="50.0" />
                   <Button fx:id="clearButton" layoutX="163.0" layoutY="227.0" mnemonicParsing="false" text="Clear" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0" />

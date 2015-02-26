@@ -1,4 +1,4 @@
-22/02/2015 02:59:17.389 - [edu.utdallas.sai.util.MyLogger.writeToLog] - [INFO] - Class Name: edu.utdallas.sai.MainApp
-22/02/2015 02:59:17.390 - [edu.utdallas.sai.util.MyLogger.writeToLog] - [INFO] - Exception: 
-/C:/eclipse/workspace/PilotRobotUI/bin/edu/utdallas/sai/view/RobotOverview.fxml
+25/02/2015 10:17:47.243 - [edu.utdallas.sai.util.MyLogger.writeToLog] - [INFO] - Class Name: edu.utdallas.sai.MainApp
+25/02/2015 10:17:47.244 - [edu.utdallas.sai.util.MyLogger.writeToLog] - [INFO] - Exception: 
+/C:/eclipse/workspace/PilotRobotUI/bin/edu/utdallas/sai/view/RobotOverview.fxml:9
 

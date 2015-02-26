@@ -3,11 +3,12 @@ package edu.utdallas.sai;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import edu.utdallas.sai.controller.RobotOverviewController;
 import edu.utdallas.sai.model.GameWorld;
 import edu.utdallas.sai.util.MyLogger;
-import edu.utdallas.sai.view.RobotOverviewController;
 
 /***
  * This is the main application class.
@@ -50,11 +51,12 @@ public class MainApp extends Application {
 			primaryStage.setTitle("Robot UI");
 			primaryStage.setMinHeight(600.0);
 			primaryStage.setMinWidth(1000.0);
+			//Add an application icon
+			this.primaryStage.getIcons().add(new Image("file:resources/images/robot_app.png"));
 			primaryStage.show();
 			
 		} catch (Exception e) {
 			MyLogger.writeToLog(this.getClass().getCanonicalName(), e.getMessage());
-			e.printStackTrace();
 		}
 	}
 	
