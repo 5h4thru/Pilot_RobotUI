@@ -17,6 +17,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Toggle;
@@ -30,6 +31,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import edu.utdallas.sai.MainApp;
@@ -39,7 +41,12 @@ import edu.utdallas.sai.model.Sprite;
 
 /***
  * Controller class for Robot
- * @author Shathru
+ * Pretty much the whole logic lies in this controller class
+ * 
+ * NetID: dxp141030
+ * Date: 19th February, 2015
+ * Modified: 26th February, 2015
+ * @author Durga Sai Preetham Palagummi
  *
  */
 public class RobotOverviewController extends GameWorld{
@@ -89,6 +96,8 @@ public class RobotOverviewController extends GameWorld{
 	AnchorPane anchorPaneForFPSPic;
 	@FXML
 	SplitPane splitPane;
+	@FXML
+	Separator armSeparator;
 	MiniRobot miniRobot;
 
 	private MainApp mainApp;
@@ -262,7 +271,6 @@ public class RobotOverviewController extends GameWorld{
 			@Override
 			public void handle(ActionEvent event) {
 				anchorPaneForFPSPic.getChildren().remove(fpsPicture);
-				// TODO
 				anchorPaneForFPSPic.setStyle("-fx-background-image: url('file:resources/images/camera/cam_bck.png'); -fx-background-size: contain; -fx-background-repeat: no-repeat; -fx-background-position: center;");
 				if(!cameraButton.isVisible()) {
 					cameraButton.setVisible(true);
@@ -335,12 +343,22 @@ public class RobotOverviewController extends GameWorld{
 		sliderArm.setMax(90.0); sliderArm.setFocusTraversable(false);
 		sliderLabel.setText("Arm is at 0\u00b0");
 		armToggle.setToggleGroup(groupArm); armToggle.setFocusTraversable(false);
+		armSeparator = (Separator) ((BorderPane)primaryStage.getScene().getRoot()).lookup("#armSeparator");
 
 		//Ensure this method is called last
 		setupInput(primaryStage); //setUpInput method is responsible for causing any game animations
 	}
 
-
+	/**
+	 * Handle the rotation of the arm image
+	 * Rotates the image with respect to angles 0-90
+	 * @param rotate
+	 */
+	void handleRotate(Double rotate) {
+		armSeparator.getTransforms().clear();
+		armSeparator.getTransforms().add(new Rotate((0-rotate),0,0));
+	}
+	
 	/**
 	 * Each sprite will update it's velocity and bounce off wall borders.
 	 *
@@ -384,6 +402,23 @@ public class RobotOverviewController extends GameWorld{
 	 */
 	private void setupInput(Stage primaryStage) {
 
+		//Run this code every five seconds.
+		/**
+		 * Will periodically check the position of the robot
+		 * and will clear the status message if the robot is in same place for five seconds
+		 */
+		Timeline fiveSecondsWonder = new Timeline(new KeyFrame(Duration.seconds(2.5), new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				if(miniRobot.getCenterX()==miniRobot.getCenterX() &&
+						miniRobot.getCenterY()==miniRobot.getCenterY()) {
+					overallStatusLabel.setText("");
+				}
+			}
+		}));
+		fiveSecondsWonder.setCycleCount(Timeline.INDEFINITE);
+
+		//////////////////////////////////
 		//Toggle arm close-open
 		groupArm.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
 
@@ -408,6 +443,8 @@ public class RobotOverviewController extends GameWorld{
 					Number old_val, Number new_val) {
 				sliderLabel.setText("Arm is at "+String.format("%.0f", new_val)+"\u00b0");
 				anchorPaneForRobot.requestFocus();
+				Double rotate = (Double) new_val;
+				handleRotate(rotate);
 			}
 		});
 		//////////////////////////////////
@@ -416,6 +453,8 @@ public class RobotOverviewController extends GameWorld{
 		primaryStage.getScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
+				// Stop the method from clearing status message
+				fiveSecondsWonder.stop();
 
 				//				System.out.println("CENTRE X: "+miniRobot.getCenterX()+"\tCENTRE Y: "+miniRobot.getCenterY());
 				if(event.getCode()==KeyCode.UP){
@@ -486,6 +525,8 @@ public class RobotOverviewController extends GameWorld{
 						miniRobot.plotCourse(miniRobot.getCenterX()-40.0, miniRobot.getCenterY(), true, "fast", true);
 					}
 				}
+				// Call the method to clear the status message after 3 seconds
+				fiveSecondsWonder.play();
 			}
 		});
 		//////////////////////////////////
@@ -494,6 +535,8 @@ public class RobotOverviewController extends GameWorld{
 		EventHandler<MouseEvent> moveWithMouse = new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
+				// Stop the method from clearing status message
+				fiveSecondsWonder.stop();
 				miniRobot.applyTheBrakes(event.getX(), event.getY());
 				// move forward and rotate robot
 				if (speed.equalsIgnoreCase("slow")) {
@@ -508,6 +551,8 @@ public class RobotOverviewController extends GameWorld{
 					overallStatusLabel.setText("The robot is cruising at 50 mph");
 					miniRobot.plotCourse(event.getX(), event.getY(), true, "fast", false);
 				}
+				// Call the method to clear the status message after 3 seconds
+				fiveSecondsWonder.play();
 			}
 		};
 		//////////////////////////////////
@@ -516,6 +561,8 @@ public class RobotOverviewController extends GameWorld{
 		EventHandler<MouseEvent> move = new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
+				// Stop the method from clearing status message
+				fiveSecondsWonder.stop();
 				if(event.getSource().toString().contains("up")) {
 					if(miniRobot.node.getTranslateY() < 0) return;
 					miniRobot.applyTheBrakes(miniRobot.getCenterX(), miniRobot.getCenterY());
@@ -580,6 +627,8 @@ public class RobotOverviewController extends GameWorld{
 						miniRobot.plotCourse(miniRobot.getCenterX()-40.0, miniRobot.getCenterY(), true, "fast", true);
 					}
 				}
+				// Call the method to clear the status message after 3 seconds
+				fiveSecondsWonder.play();
 			}
 		};
 		//////////////////////////////////

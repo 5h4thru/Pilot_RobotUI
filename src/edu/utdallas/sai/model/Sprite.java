@@ -4,7 +4,8 @@ import javafx.scene.Node;
 
 /**
  * The Sprite class represents a image or node to be displayed.
- *
+ * NetID: dxp141030
+ * Date: 19th February, 2015
  * @author Durga Sai Preetham Palagummi
  */
 public abstract class Sprite {

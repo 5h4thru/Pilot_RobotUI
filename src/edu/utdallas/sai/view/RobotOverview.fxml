@@ -17,7 +17,7 @@
       </AnchorPane>
    </top>
    <bottom>
-      <AnchorPane prefHeight="100.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+      <AnchorPane prefHeight="123.0" prefWidth="600.0" BorderPane.alignment="CENTER">
          <children>
             <Group layoutX="88.0" layoutY="22.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="350.0">
                <children>
@@ -38,9 +38,11 @@
             </VBox>
             <Label fx:id="overallStatusLabel" layoutX="249.0" layoutY="4.0" AnchorPane.leftAnchor="190.0" AnchorPane.rightAnchor="0.0" />
             <Slider fx:id="sliderArm" layoutX="605.0" layoutY="52.0" prefHeight="18.0" prefWidth="280.0" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="20.0" />
-            <ToggleButton fx:id="armToggle" layoutX="600.0" layoutY="27.0" mnemonicParsing="false" styleClass="button" text="Arm is OPENED" AnchorPane.bottomAnchor="40.0" AnchorPane.rightAnchor="173.0" />
+            <ToggleButton fx:id="armToggle" layoutX="600.0" layoutY="27.0" mnemonicParsing="false" styleClass="button" text="Arm is OPENED" AnchorPane.bottomAnchor="35.0" AnchorPane.rightAnchor="173.0" />
             <Label fx:id="sliderLabel" layoutX="799.0" layoutY="34.0" text="Arm is at" AnchorPane.bottomAnchor="40.0" AnchorPane.rightAnchor="28.0" />
             <Label fx:id="armImageLabel" layoutX="557.0" layoutY="39.0" AnchorPane.rightAnchor="320.0" />
+            <Separator fx:id="armSeparator" layoutX="773.0" layoutY="38.0" prefHeight="3.0" prefWidth="50.0" AnchorPane.bottomAnchor="70.0" AnchorPane.rightAnchor="140.0" />
+            <Label layoutX="602.0" layoutY="33.0" text="Arm's angle" AnchorPane.bottomAnchor="70.0" AnchorPane.rightAnchor="200.0" />
          </children>
       </AnchorPane>
    </bottom>

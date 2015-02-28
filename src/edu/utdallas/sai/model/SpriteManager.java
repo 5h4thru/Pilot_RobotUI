@@ -3,7 +3,9 @@ package edu.utdallas.sai.model;
 import java.util.*;
 
 /**
- * Sprite manager is responsible for holding all sprite objects
+ * Sprite manager is responsible for holding all sprite objects.
+ * NetID: dxp141030
+ * Date: 19th February, 2015
  * @author Durga Sai Preetham Palagummi
  */
 public class SpriteManager {

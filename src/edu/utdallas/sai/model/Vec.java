@@ -9,6 +9,9 @@ package edu.utdallas.sai.model;
  * The x and y data members are converted to cartesian coordinates before storing.
  *
  * I purposefully left out getters and setters. In gaming just keep things minimalistic.
+ * 
+ * NetID: dxp141030
+ * Date: 19th February, 2015
  * @author Durga Sai Preetham Palagummi
  */
 public class Vec {

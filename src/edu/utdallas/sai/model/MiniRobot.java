@@ -10,14 +10,21 @@ import javafx.event.EventHandler;
 import javafx.scene.CacheHint;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.CircleBuilder;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /**
- * 
+ * This class is the model for the sprite
+ * In our case, this class will hold the robot image and all 32 variations of the image
+ * which will be helpful for rotating the image when user moves the robot around with mouse
+ * NetID: dxp141030
+ * Date: 19th February, 2015
  * @author Durga Sai Preetham Palagummi
  */
 @SuppressWarnings({"deprecation", "unused"})
@@ -389,6 +396,5 @@ public class MiniRobot extends Sprite {
 		stopArea.setCenterX(screenX);
 		stopArea.setCenterY(screenY);
 	}
-
 
 }

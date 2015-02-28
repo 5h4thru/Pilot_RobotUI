@@ -9,6 +9,10 @@
     -fx-opacity: 0.6;
 }
 
+.separator {
+	-fx-background-color: black;
+} 
+
 .label-bright {
     -fx-font-size: 14pt;
     -fx-font-family: "Calibri";

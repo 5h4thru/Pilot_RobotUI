@@ -10,7 +10,14 @@ import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-
+/**
+ * A simple logger class that will be used to log any exceptions that occur in the application
+ * The log file will be present in /logs folder
+ * NetID: dxp141030
+ * Date: 19th February, 2015
+ * @author Durga Sai Preetham Palagummi
+ *
+ */
 public class MyLogger {
 
 	public static void writeToLog(String className, String exception) {

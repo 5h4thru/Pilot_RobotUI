@@ -12,6 +12,9 @@ import javafx.util.Duration;
 
 /***
  * The abstract class for game loop
+ * NetID: dxp141030
+ * Date: 19th February, 2015
+ * Modified: 26th February, 2015
  * @author Durga Sai Preetham Palagummi
  *
  */
@@ -171,7 +174,7 @@ public abstract class GameWorld {
     }
 
     /**
-     * Stop threads and stop media from playing.
+     * Stop threads.
      */
     public void shutdown() {
         getGameLoop().stop();
